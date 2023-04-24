@@ -17,6 +17,11 @@ class TrustProxies extends Middleware
      */
     protected $proxies = [];
 
+    private $platformHeaders = [
+        'Do-Connecting-Ip',
+        'HTTP_CF_CONNECTING_IP',
+    ];
+
     /**
      * The headers that should be used to detect proxies.
      *
@@ -34,9 +39,34 @@ class TrustProxies extends Middleware
      */
     protected function setTrustedProxyIpAddresses(Request $request): void
     {
-        Config::get('proxy-middleware.trust-all')
-            ? $this->setTrustedProxyAll($request)
-            : $this->setTrustedProxyCloudflare($request);
+        if(!$this->findAndSetIpBasedOnHeader($request))
+        {
+            Config::get('proxy-middleware.trust-all')
+                ? $this->setTrustedProxyAll()
+                : $this->setTrustedProxyCloudflare($request);
+        }
+    }
+
+    
+    private function findAndSetIpBasedOnHeader(Request $request): ?string
+    {
+        $ip = false;
+
+        foreach($this->platformHeaders as $header) {
+            $ip = $this->getIpFromHeader($request, $header);
+
+            if($ip) {
+                break;
+            }
+        }
+
+        $request->server->add(['REMOTE_ADDR' => $ip]);
+        return $ip;
+    }
+
+    private function getIpFromHeader(Request $request, string $header): ?string
+    {
+        return $request->header($header) ?? $request->server->get($header);
     }
 
     /**
