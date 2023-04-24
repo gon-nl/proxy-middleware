@@ -6,7 +6,7 @@ use Illuminate\Http\Middleware\TrustProxies as Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Config;
 
 class TrustProxies extends Middleware
 {
@@ -34,9 +34,9 @@ class TrustProxies extends Middleware
      */
     protected function setTrustedProxyIpAddresses(Request $request): void
     {
-        if ('cloudflare' === $request->header('Server')) {
-            $this->setTrustedProxyCloudflare();
-        }
+        Config::get('proxy-middleware.trust-all')
+            ? $this->setTrustedProxyAll($request)
+            : $this->setTrustedProxyCloudflare($request);
     }
 
     /**
@@ -49,6 +49,14 @@ class TrustProxies extends Middleware
         if (\is_array($cachedProxies) && \count($cachedProxies) > 0) {
             $this->proxies = array_merge($this->proxies, $cachedProxies);
         }
+    }
+
+    /**
+     * Sets the trusted proxies on the request to the value of all ips.
+     */
+    private function setTrustedProxyAll(): void
+    {
+        $this->proxies = '*';
     }
 
     /**
