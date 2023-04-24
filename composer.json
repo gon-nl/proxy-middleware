@@ -1,0 +1,36 @@
+{
+    "name": "gon-nl/proxy-middleware",
+    "description": ":package_description",
+    "license": "MIT",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "recode-lang",
+            "email": "hello@gon.nl",
+            "homepage": "https://gon.nl"
+        }
+    ],
+    "homepage": "https://github.com/gon-nl/proxy-middleware",
+    "keywords": [
+        "Laravel",
+        "ProxyMiddleware"
+    ],
+    "require": {
+        "illuminate/support": "^10"
+    },
+    "autoload": {
+        "psr-4": {
+            "GonNl\\ProxyMiddleware\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "GonNl\\ProxyMiddleware\\ProxyMiddlewareServiceProvider"
+            ],
+            "aliases": {
+                "ProxyMiddleware": "GonNl\\ProxyMiddleware\\Facades\\ProxyMiddleware"
+            }
+        }
+    }
+}
