@@ -69,7 +69,7 @@ class TrustProxies extends Middleware
      */
     private function findAndSetIpBasedOnHeader(Request $request): ?string
     {
-        $ip = false;
+        $ip = null;
 
         $cachedHeader = Cache::get('header', false);
 
